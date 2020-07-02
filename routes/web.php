@@ -14,3 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/billings', 'BillingController@store')->name('billings.store');
+
+Route::name('billings.')->prefix('billings')->group(function () {
+    Route::post('/', 'BillingController@store')->name('store');
+    Route::put('{id}/pay', 'BillingController@pay')->name('pay');
+});

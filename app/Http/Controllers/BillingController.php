@@ -6,6 +6,7 @@ use App\Http\Requests\BillingRequest;
 use App\Billing;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BillingCreated;
+use App\Exceptions\BillingNotFoundException;
 
 class BillingController extends Controller
 {
@@ -54,5 +55,25 @@ class BillingController extends Controller
     {
         Mail::to($billing->email)
             ->queue(new BillingCreated($billing));
+    }
+
+    /**
+     * Update billing paid to 1.
+     * 
+     * @param integer $id
+     * @throws BillingNotFoundException
+     * @return Response
+     */
+    public function pay($id)
+    {
+        $billing = Billing::find($id);
+        if (!$billing) {
+            throw new BillingNotFoundException();
+        }
+
+        $billing->paid = 1;
+        $billing->save();
+        
+        return rest_api($billing);
     }
 }
