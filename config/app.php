@@ -175,6 +175,10 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        /**
+         * Sentry Service Provider
+         */
+        Sentry\Laravel\ServiceProvider::class,
     ],
 
     /*
@@ -226,7 +230,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-
+        'Sentry' => Sentry\Laravel\Facade::class,
     ],
 
 ];
