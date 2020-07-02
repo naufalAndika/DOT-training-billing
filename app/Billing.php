@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class Billing extends Model
 {
@@ -25,7 +27,16 @@ class Billing extends Model
      *
      * @var array
      */
-    protected $dates = [
-        'pay_before',
-    ];
+    protected $dates = ['pay_before'];
+
+    /**
+     * Generate billing_number.
+     * 
+     * @return void
+     */
+    public function generateNumber()
+    {
+        $this->billing_number = Hash::make($this->id . Carbon::now());
+        $this->save();
+    }
 }
