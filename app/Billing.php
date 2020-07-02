@@ -11,7 +11,7 @@ class Billing extends Model
      * 
      * @var array
      */
-    protected $guarded = ['id'];
+    protected $guarded = ['id', 'paid', 'billing_number'];
 
     /**
      * The attributes that should be hidden for arrays.
