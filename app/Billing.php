@@ -11,5 +11,12 @@ class Billing extends Model
      * 
      * @var array
      */
-    protected $guarded = [];
+    protected $guarded = ['id'];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     * 
+     * @var array
+     */
+    protected $hidden = ['updated_at'];
 }
