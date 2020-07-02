@@ -19,4 +19,13 @@ class Billing extends Model
      * @var array
      */
     protected $hidden = ['updated_at'];
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'pay_before',
+    ];
 }
