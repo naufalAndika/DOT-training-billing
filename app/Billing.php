@@ -36,7 +36,7 @@ class Billing extends Model
      */
     public function generateNumber()
     {
-        $this->billing_number = Hash::make($this->id . Carbon::now());
+        $this->billing_number = md5(uniqid($this->id, true));
         $this->save();
     }
 }
