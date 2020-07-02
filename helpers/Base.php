@@ -1,6 +1,23 @@
 <?php
 
 /**
+ * Create api response
+ * 
+ * @param mixed data
+ * @param integer response code
+ * 
+ * @return Response
+ */
+if (!function_exists('rest_api')) {
+    function rest_api($data, $code)
+    {
+        $response['data'] = $data;
+
+        return response()->json($response, $code);
+    }
+}
+
+/**
  * Create error response
  * 
  * @param string message
