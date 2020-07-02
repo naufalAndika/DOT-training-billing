@@ -9,7 +9,7 @@
  * @return Response
  */
 if (!function_exists('rest_api')) {
-    function rest_api($data, $code = 200)
+    function rest_api($data, $code)
     {
         $response['data'] = $data;
 
