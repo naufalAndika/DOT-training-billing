@@ -21,7 +21,7 @@ class CreateBillingsTable extends Migration
             $table->integer('discount');
             $table->date('pay_before');
             $table->string('email');
-            $table->boolean('paid', false);
+            $table->boolean('paid')->default(0);
             $table->timestamps();
         });
     }
