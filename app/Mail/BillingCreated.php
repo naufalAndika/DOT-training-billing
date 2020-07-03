@@ -45,7 +45,8 @@ class BillingCreated extends Mailable
             'discount'          => $this->billing->discount,
             'total'             => $this->billing->price * (100 - $this->billing->discount) / 100,
             'pay_before'        => $this->billing->pay_before,
-            'payment_link'      => url('/pay') . "/" . $this->billing->billing_number
+            'payment_link'      => url('/billings') . "/" . $this->billing->billing_number . "/pay",
+            'cancel_link'       => url('/billings') . "/" . $this->billing->billing_number . "/cancel"
         ];
 
         return $this->from('ap.andikaputra2000@gmail.com')

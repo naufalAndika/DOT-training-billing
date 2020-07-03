@@ -51,7 +51,7 @@
                                 </tr>
                                 <tr>
                                     <td class="highrow"><a class="btn btn-primary" href="{{ $payment_link }}" role="button">Pay</a></td>
-                                    <td class="highrow"></td>
+                                    <td class="highrow"><a class="btn btn-danger" href="{{ $cancel_link }}" role="button">Cancel</a></td>
                                     <td class="highrow text-center"><strong>Pay Before</strong></td>
                                     <td class="highrow text-right">{{ $pay_before }}</td>
                                 </tr>

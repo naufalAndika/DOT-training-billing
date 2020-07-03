@@ -64,4 +64,16 @@ class Billing extends Model
         $this->paid = 1;
         $this->save();
     }
+
+    /**
+     * Find billing by billing_number
+     * 
+     * @param string $number
+     * 
+     * @return Billing
+     */
+    public static function findByNumber($number)
+    {
+        return Billing::where('billing_number', $number)->first();
+    }
 }

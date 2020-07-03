@@ -64,14 +64,14 @@ class BillingController extends Controller
     /**
      * Update billing paid to 1.
      * 
-     * @param integer $id
+     * @param string $number
      * @throws BillingNotFoundException
      * @throws BillingExpiredException
      * @return Response
      */
-    public function pay($id)
+    public function pay($number)
     {
-        $billing = Billing::find($id);
+        $billing = Billing::findByNumber($number);
         if (!$billing) {
             throw new BillingNotFoundException();
         }
@@ -133,13 +133,13 @@ class BillingController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  string $number
      * @throws BillingNotFoundException
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function cancel($number)
     {
-        $billing = Billing::find($id);
+        $billing = Billing::findByNumber($number);
         if (!$billing) {
             throw new BillingNotFoundException();
         }
