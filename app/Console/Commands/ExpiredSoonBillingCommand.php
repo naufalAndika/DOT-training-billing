@@ -42,7 +42,9 @@ class ExpiredSoonBillingCommand extends Command
     public function handle()
     {
         $tenMinutesBeforeNow = Carbon::now()->subMinutes(10);
-        $expiredSoonBillings = Billing::where('pay_before', '<=', $tenMinutesBeforeNow)->where('paid', 0)->get();
+        $expiredSoonBillings = Billing::where('pay_before', '<=', $tenMinutesBeforeNow)
+            ->where('pay_before', '<', Carbon::now())
+            ->where('paid', 0)->get();
 
         foreach($expiredSoonBillings as $billing) {
             Mail::to($billing->email)
