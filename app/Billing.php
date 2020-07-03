@@ -39,4 +39,29 @@ class Billing extends Model
         $this->billing_number = md5(uniqid($this->id, true));
         $this->save();
     }
+
+    /**
+     * Check if billing is valid.
+     * 
+     * @return boolean
+     */
+    public function isValid()
+    {
+        if ($this->pay_before < Carbon::now()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Update paid to 1.
+     * 
+     * @return void
+     */
+    public function pay()
+    {
+        $this->paid = 1;
+        $this->save();
+    }
 }

@@ -4,7 +4,7 @@ namespace App\Exceptions;
 
 use Exception;
 
-class BillingNotFoundException extends Exception
+class BillingExpiredException extends Exception
 {
     /**
      * Render an exception into an HTTP response.
@@ -15,6 +15,6 @@ class BillingNotFoundException extends Exception
      */
     public function render($request)
     {
-        return rest_error("Billing Not Found", null, 404, 404);
+        return rest_error('Billing Expired', null, 401, 401);
     }
 }

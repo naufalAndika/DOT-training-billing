@@ -7,6 +7,7 @@ use App\Billing;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BillingCreated;
 use App\Exceptions\BillingNotFoundException;
+use App\Exceptions\BillingExpiredException;
 
 class BillingController extends Controller
 {
@@ -71,8 +72,11 @@ class BillingController extends Controller
             throw new BillingNotFoundException();
         }
 
-        $billing->paid = 1;
-        $billing->save();
+        if (!$billing->isValid()) {
+            throw new BillingExpiredException();
+        }
+
+        $billing->pay();
         
         return rest_api($billing);
     }
