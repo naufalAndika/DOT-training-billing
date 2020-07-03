@@ -18,4 +18,5 @@ Route::post('/billings', 'BillingController@store')->name('billings.store');
 Route::name('billings.')->prefix('billings')->group(function () {
     Route::post('/', 'BillingController@store')->name('store');
     Route::get('{id}/pay', 'BillingController@pay')->name('pay');
+    Route::get('{id}/cancel', 'BillingController@destroy')->name('cancel');
 });
