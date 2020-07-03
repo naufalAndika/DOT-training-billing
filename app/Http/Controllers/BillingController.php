@@ -6,8 +6,11 @@ use App\Http\Requests\BillingRequest;
 use App\Billing;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BillingCreated;
+use App\Mail\BillingPaid;
 use App\Exceptions\BillingNotFoundException;
 use App\Exceptions\BillingExpiredException;
+use Illuminate\Support\Facades\Storage;
+use PDF;
 
 class BillingController extends Controller
 {
@@ -63,6 +66,7 @@ class BillingController extends Controller
      * 
      * @param integer $id
      * @throws BillingNotFoundException
+     * @throws BillingExpiredException
      * @return Response
      */
     public function pay($id)
@@ -77,7 +81,72 @@ class BillingController extends Controller
         }
 
         $billing->pay();
-        
+
+        $this->generateBilling($billing);
+        $this->sendPaidBilling($billing);
+
         return rest_api($billing);
     }
+
+    /**
+     * Download billing file as PDF.
+     * 
+     * @param Billing $billing
+     * @return PDF
+     */
+    private function generateBilling(Billing $billing)
+    {
+        $data = $this->fetchPDF($billing);
+        $billingPDF = PDF::loadview('emails.billing_paid', $data);
+        Storage::put("billing_$billing->id.pdf", $billingPDF->output());
+    }
+
+    /**
+     * Fetch data for PDF file.
+     * 
+     * @param Billing $billing
+     * @return array
+     */
+    private function fetchPDF($billing)
+    {
+        return [
+            'id'                => $billing->id,
+            'product_name'      => $billing->product_name,
+            'price'             => $billing->price,
+            'discount'          => $billing->discount,
+            'total'             => $billing->price * (100 - $billing->discount) / 100,
+        ];
+    }
+
+    /**
+     * Send paid billing.
+     * 
+     * @param Billing $billing
+     * @return void
+     */
+    private function sendPaidBilling(Billing $billing)
+    {
+        Mail::to($billing->email)
+            ->queue(new BillingPaid($billing));
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @throws BillingNotFoundException
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        $billing = Billing::find($id);
+        if (!$billing) {
+            throw new BillingNotFoundException();
+        }
+
+        $billing->delete();
+
+        return rest_api("Billing Deleted");
+    }
+    
 }

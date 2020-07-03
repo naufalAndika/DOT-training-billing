@@ -165,6 +165,8 @@ return [
         /*
          * Package Service Providers...
          */
+        Barryvdh\DomPDF\ServiceProvider::class,
+        Sentry\Laravel\ServiceProvider::class,
 
         /*
          * Application Service Providers...
@@ -174,11 +176,6 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
-        /**
-         * Sentry Service Provider
-         */
-        Sentry\Laravel\ServiceProvider::class,
     ],
 
     /*
@@ -231,6 +228,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Sentry' => Sentry\Laravel\Facade::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class,
     ],
 
 ];
