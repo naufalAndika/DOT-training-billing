@@ -23,4 +23,29 @@ class BillingRepository
     {
         $this->model = $billing;
     }
+
+    /**
+     * Store new billing and generate billing number.
+     * 
+     * @param array $data
+     * @return Billing
+     */
+    public function storeBilling($data)
+    {
+        $billing = Billing::create($data);
+        $billing->generateNumber();
+
+        return $billing;
+    }
+
+    /**
+     * Get billing by it's number.
+     * 
+     * @param string $number
+     * @return Billing
+     */
+    public function findByNumber($number)
+    {
+        return $this->model->where('billing_number', $number);
+    }
 }

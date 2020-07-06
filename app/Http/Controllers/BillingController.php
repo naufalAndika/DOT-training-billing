@@ -11,9 +11,38 @@ use App\Exceptions\BillingNotFoundException;
 use App\Exceptions\BillingExpiredException;
 use Illuminate\Support\Facades\Storage;
 use PDF;
+use App\Repositories\BillingRepository;
+use App\Services\BillingService;
 
 class BillingController extends Controller
 {
+    /**
+     * The billing repository.
+     * 
+     * @var BillingRepository
+     */
+    private $billingRepository;
+
+    /**
+     * The billing service.
+     * 
+     * @var BillingService
+     */
+    private $billingService;
+
+    /**
+     * Create new BillingController instance.
+     * 
+     * @param BillingRepository $billingRepository
+     * @param BillingService $billingService
+     * @return void
+     */
+    public function __construct(BillingRepository $billingRepository, BillingService $billingService)
+    {
+        $this->billingRepository = $billingRepository;
+        $this->billingService = $billingService;
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -24,11 +53,7 @@ class BillingController extends Controller
     {
         $data = $this->fetchStore($request);
 
-        $billing = Billing::create($data);
-        $billing->generateNumber();
-
-        $this->sendBilling($billing);
-
+        $billing = $this->billingService->createBilling($data);
         return rest_api($billing, 201);
     }
 
@@ -50,18 +75,6 @@ class BillingController extends Controller
     }
 
     /**
-     * Send billing to email.
-     * 
-     * @param Billing $billing
-     * @return void
-     */
-    private function sendBilling(Billing $billing)
-    {
-        Mail::to($billing->email)
-            ->queue(new BillingCreated($billing));
-    }
-
-    /**
      * Update billing paid to 1.
      * 
      * @param string $number
@@ -71,7 +84,7 @@ class BillingController extends Controller
      */
     public function pay($number)
     {
-        $billing = Billing::findByNumber($number);
+        $billing = $this->billingRepository->findByNumber($number);
         if (!$billing) {
             throw new BillingNotFoundException();
         }
@@ -80,58 +93,12 @@ class BillingController extends Controller
             throw new BillingExpiredException();
         }
 
-        $billing->pay();
-
-        $this->generateBilling($billing);
-        $this->sendPaidBilling($billing);
-
+        $this->billingService->payBilling($billing);
         return rest_api($billing);
     }
 
     /**
-     * Download billing file as PDF.
-     * 
-     * @param Billing $billing
-     * @return PDF
-     */
-    private function generateBilling(Billing $billing)
-    {
-        $data = $this->fetchPDF($billing);
-        $billingPDF = PDF::loadview('emails.billing_paid', $data);
-        Storage::put("billing_$billing->id.pdf", $billingPDF->output());
-    }
-
-    /**
-     * Fetch data for PDF file.
-     * 
-     * @param Billing $billing
-     * @return array
-     */
-    private function fetchPDF($billing)
-    {
-        return [
-            'id'                => $billing->id,
-            'product_name'      => $billing->product_name,
-            'price'             => $billing->price,
-            'discount'          => $billing->discount,
-            'total'             => $billing->price * (100 - $billing->discount) / 100,
-        ];
-    }
-
-    /**
-     * Send paid billing.
-     * 
-     * @param Billing $billing
-     * @return void
-     */
-    private function sendPaidBilling(Billing $billing)
-    {
-        Mail::to($billing->email)
-            ->queue(new BillingPaid($billing));
-    }
-
-    /**
-     * Remove the specified resource from storage.
+     * Cancel billing.
      *
      * @param  string $number
      * @throws BillingNotFoundException
@@ -139,14 +106,13 @@ class BillingController extends Controller
      */
     public function cancel($number)
     {
-        $billing = Billing::findByNumber($number);
+        $billing = $this->billingRepository->findByNumber($number);
         if (!$billing) {
             throw new BillingNotFoundException();
         }
 
-        $billing->delete();
-
-        return rest_api("Billing Deleted");
+        $this->billingService->cancelBilling($billing);
+        return rest_api("Billing Canceled");
     }
     
 }
